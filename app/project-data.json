@@ -1,0 +1,53 @@
+{
+  "projects": [
+    {
+      "name": "Customer Insight Hub",
+      "owner": "Priya Raman",
+      "status": "active",
+      "recentActivity": "Prototype dashboard reviewed with support leads yesterday.",
+      "priority": "high"
+    },
+    {
+      "name": "Northstar Billing Migration",
+      "owner": "Mateo Alvarez",
+      "status": "at-risk",
+      "recentActivity": "Payment processor contract review is taking longer than planned.",
+      "priority": "critical"
+    },
+    {
+      "name": "Partner API Reliability Sprint",
+      "owner": "Jordan Lee",
+      "status": "blocked",
+      "recentActivity": "Waiting on vendor sandbox credentials before load testing can continue.",
+      "priority": "high"
+    },
+    {
+      "name": "Contributor Onboarding Refresh",
+      "owner": "Mona Patel",
+      "status": "on-hold",
+      "recentActivity": "Paused while the learning team finalizes the new editorial guidelines.",
+      "priority": "medium"
+    },
+    {
+      "name": "Accessibility Audit Remediation",
+      "owner": "Elena Petrova",
+      "status": "complete",
+      "recentActivity": "Final WCAG verification passed and release notes were published Friday.",
+      "priority": "medium"
+    },
+    {
+      "name": "Internal Knowledge Base Cleanup",
+      "owner": "Sam Rivera",
+      "status": "active",
+      "recentActivity": "Archived duplicate runbooks and tagged the top 40 most-used support articles.",
+      "priority": "low"
+    },
+    {
+      "name": "Enterprise Workspace Provisioning Experience for Multi-Region Education Cohorts",
+      "owner": "Avery Chen",
+      "status": "at-risk",
+      "recentActivity": "The team uncovered a region-specific identity synchronization edge case that requires coordinated testing across platform, security, and curriculum operations before the pilot can expand.",
+      "priority": "critical"
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="dashboard__header">
+      <h1>Project Pulse</h1>
+      <p>Track team momentum, risks, and recent progress across Mona's portfolio.</p>
+    </header>
+
+    <main class="dashboard">
+      <ul class="project-list" aria-label="Projects"></ul>
+    </main>
+
+    <script>
+      const projectsList = document.querySelector('.project-list');
+      const allowedStatuses = new Set(['active', 'at-risk', 'blocked', 'on-hold', 'complete']);
+      const allowedPriorities = new Set(['low', 'medium', 'high', 'critical']);
+
+      function normalizeValue(value) {
+        return String(value || '').trim().toLowerCase();
+      }
+
+      function labelFromValue(value, fallback) {
+        const normalizedValue = normalizeValue(value);
+
+        if (!normalizedValue) {
+          return fallback;
+        }
+
+        return normalizedValue
+          .split('-')
+          .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+          .join(' ');
+      }
+
+      function getModifier(value, allowedValues) {
+        const normalizedValue = normalizeValue(value);
+        return allowedValues.has(normalizedValue) ? normalizedValue : 'unknown';
+      }
+
+      function clearList() {
+        projectsList.textContent = '';
+      }
+
+      function renderEmptyState() {
+        clearList();
+
+        const emptyState = document.createElement('div');
+        emptyState.className = 'empty-state';
+        emptyState.textContent = 'No projects to show yet. Check back after the next planning update.';
+
+        projectsList.replaceWith(emptyState);
+      }
+
+      function renderErrorState() {
+        clearList();
+
+        const errorState = document.createElement('div');
+        errorState.className = 'error-state';
+        errorState.textContent = 'Project Pulse could not load project data. Please try refreshing the dashboard.';
+
+        projectsList.replaceWith(errorState);
+      }
+
+      function createStatusBadge(status) {
+        const statusModifier = getModifier(status, allowedStatuses);
+        const statusLabel = labelFromValue(status, 'Unknown');
+        const statusBadge = document.createElement('span');
+        statusBadge.classList.add('status-badge', `status-badge--${statusModifier}`);
+
+        const statusContext = document.createElement('span');
+        statusContext.className = 'sr-only';
+        statusContext.textContent = `Status: ${statusLabel}`;
+
+        const visibleStatus = document.createElement('span');
+        visibleStatus.setAttribute('aria-hidden', 'true');
+        visibleStatus.textContent = statusLabel;
+
+        statusBadge.append(statusContext, visibleStatus);
+
+        return statusBadge;
+      }
+
+      function createPriority(priority) {
+        const priorityModifier = getModifier(priority, allowedPriorities);
+        const priorityLabel = labelFromValue(priority, 'Unknown');
+        const priorityElement = document.createElement('span');
+        priorityElement.classList.add('priority', `priority--${priorityModifier}`);
+        priorityElement.textContent = `Priority: ${priorityLabel}`;
+
+        return priorityElement;
+      }
+
+      function createProjectCard(project) {
+        const card = document.createElement('li');
+        card.className = 'project-card';
+
+        const title = document.createElement('h2');
+        title.className = 'project-card__title';
+        title.textContent = project.name || 'Untitled project';
+
+        const owner = document.createElement('p');
+        owner.className = 'project-card__owner';
+        owner.textContent = `Owner: ${project.owner || 'Unassigned'}`;
+
+        const statusBadge = createStatusBadge(project.status);
+        const priority = createPriority(project.priority);
+
+        const activity = document.createElement('p');
+        activity.className = 'project-card__activity';
+        activity.textContent = `Recent: ${project.recentActivity || 'No recent activity'}`;
+
+        card.append(title, owner, statusBadge, priority, activity);
+
+        return card;
+      }
+
+      function renderProjects(projects) {
+        if (!Array.isArray(projects) || projects.length === 0) {
+          renderEmptyState();
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        projects.forEach((project) => {
+          fragment.append(createProjectCard(project || {}));
+        });
+
+        clearList();
+        projectsList.append(fragment);
+      }
+
+      async function loadProjects() {
+        try {
+          const response = await fetch('./project-data.json');
+
+          if (!response.ok) {
+            throw new Error(`Project data request failed with status ${response.status}`);
+          }
+
+          const data = await response.json();
+          renderProjects(data.projects);
+        } catch (error) {
+          console.error('Unable to load Project Pulse data:', error);
+          renderErrorState();
+        }
+      }
+
+      loadProjects();
+    </script>
+  </body>
+</html>
